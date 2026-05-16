@@ -1,0 +1,65 @@
+project:
+  id: e79c9476-811d-4bfe-84e1-1fbe4098862f
+  created: '2026-05-16T19:39:01.738082+00:00'
+  updated: '2026-05-16T19:41:28.769451+00:00'
+investigator:
+  pi_name: Erich Huang
+  pi_orcid: 0000-0002-6585-9429
+  pi_email: erich.huang@advocatehealth.org
+  contributors: []
+institution:
+  department: Research Informatics
+  irb_number: null
+  irb_status: null
+  funding_source: institutional
+compute:
+  sce_tier: 2
+  data_tier: A
+  environment: local
+  requested_at: '2026-05-16T19:39:01.738082+00:00'
+  approved_at: null
+  expires_at: null
+phenotype:
+  name: Heart Failure with Reduced Ejection Fraction (HFrEF)
+  version: 0.1.0
+  domain: condition
+  omop_aligned: true
+  clarity_required: false
+  target_concept_ids:
+  - 316139
+  - 4229440
+  - 40479492
+  icd_codes:
+  - I50.1
+  - I50.20
+  - I50.21
+  - I50.22
+  - I50.23
+  description: Identifies adult patients with heart failure with reduced ejection
+    fraction (HFrEF), defined as a left ventricular ejection fraction (LVEF) less
+    than 40% documented on echocardiography, with a confirmed ICD-10 diagnosis of
+    heart failure. Derived from the OMOP Common Data Model using standard concept
+    identifiers. Intended for use in trial-ready cohort identification and cardiovascular
+    outcomes research.
+  inclusion_criteria: Age >= 18 at index date; ICD-10-CM code I50.x (heart failure)
+    in condition_occurrence; LVEF < 40% documented in measurement domain (LOINC 18009-2
+    or 8806-2); Echocardiogram within 24 months prior to index date; At least one
+    encounter in the 12 months prior to index date.
+  exclusion_criteria: Age < 18; No qualifying echocardiogram within 24 months; LVEF
+    >= 40% on most recent echocardiogram; Heart failure diagnosis in setting of acute
+    MI only (I21.x as primary diagnosis with no subsequent heart failure encounter);
+    Enrollment in hospice or palliative care at index date.
+  validation_status: internal_validated
+  validation_method: cohort_diagnostics
+  ppv: null
+  phekb_id: '178'
+  ohdsi_pl_id: null
+outputs:
+  reusable_assets: []
+  publications: []
+  downstream_projects: []
+contribution:
+  deposit_eligible: false
+  deposit_submitted: false
+  deposit_date: null
+  credit_granted: false

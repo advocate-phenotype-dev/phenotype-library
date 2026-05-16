@@ -1,2 +1,12 @@
-generated: '2026-05-16T19:34:10.736793+00:00'
-projects: []
+generated: '2026-05-16T19:41:28.774370+00:00'
+projects:
+- id: e79c9476-811d-4bfe-84e1-1fbe4098862f
+  pi_orcid: 0000-0002-6585-9429
+  pi_name: Erich Huang
+  phenotype_name: Heart Failure with Reduced Ejection Fraction (HFrEF)
+  domain: condition
+  validation_status: internal_validated
+  deposit_eligible: false
+  credit_granted: false
+  sce_tier: 2
+  updated: '2026-05-16T19:41:28.769451+00:00'
