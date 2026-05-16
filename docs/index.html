@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Advocate Health CRIO — Phenotype Library</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:14px;color:#1a1a1a;background:#f8f7f4;min-height:100vh}
+.topbar{background:#fff;border-bottom:0.5px solid #e0ddd6;padding:0 2rem;display:flex;align-items:center;height:52px;gap:16px}
+.topbar-logo{font-size:14px;font-weight:500;color:#1a1a1a}
+.topbar-sub{font-size:12px;color:#888780}
+.container{max-width:860px;margin:0 auto;padding:2rem 1.5rem}
+.steps{display:flex;gap:8px;margin-bottom:1.5rem;align-items:center}
+.step{display:flex;align-items:center;gap:6px;font-size:13px;color:#888780;cursor:pointer;padding:6px 10px;border-radius:8px}
+.step.active{color:#1a1a1a;background:#fff;border:0.5px solid #e0ddd6}
+.step.done{color:#3B6D11}
+.step-num{width:20px;height:20px;border-radius:50%;border:0.5px solid #c0bdb5;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500}
+.step.active .step-num{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.step.done .step-num{background:#EAF3DE;border-color:#97C459;color:#3B6D11}
+.sep{color:#c0bdb5;font-size:12px}
+.panel{background:#fff;border:0.5px solid #e0ddd6;border-radius:12px;padding:1.5rem}
+.panel h2{font-size:15px;font-weight:500;margin-bottom:1.25rem;color:#1a1a1a}
+.field{margin-bottom:12px}
+.field label{display:block;font-size:12px;color:#5F5E5A;margin-bottom:4px;font-weight:500}
+.field input,.field select,.field textarea{width:100%;padding:8px 10px;border:0.5px solid #c0bdb5;border-radius:8px;font-size:13px;background:#fff;color:#1a1a1a;outline:none;font-family:inherit}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:#378ADD;box-shadow:0 0 0 3px rgba(55,138,221,0.12)}
+.field textarea{height:80px;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.btn{padding:8px 16px;font-size:13px;border-radius:8px;cursor:pointer;border:0.5px solid #c0bdb5;background:#fff;color:#1a1a1a;font-family:inherit}
+.btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.btn:hover{background:#f1efe8}
+.btn-primary:hover{background:#333}
+.actions{display:flex;gap:8px;margin-top:1.25rem;justify-content:flex-end}
+.alert{padding:10px 14px;border-radius:8px;font-size:13px;margin-bottom:12px;border:0.5px solid;line-height:1.5}
+.alert-success{background:#EAF3DE;border-color:#97C459;color:#27500A}
+.alert-danger{background:#FCEBEB;border-color:#F09595;color:#791F1F}
+.alert-info{background:#E6F1FB;border-color:#85B7EB;color:#0C447C}
+.schema-box{background:#f8f7f4;border-radius:8px;padding:12px;font-family:"SF Mono",Monaco,monospace;font-size:11px;line-height:1.7;color:#5F5E5A;white-space:pre-wrap;margin-bottom:12px;max-height:280px;overflow-y:auto;border:0.5px solid #e0ddd6}
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:2px 8px;border-radius:4px}
+.badge-green{background:#EAF3DE;color:#27500A}
+.badge-amber{background:#FAEEDA;color:#633806}
+.badge-gray{background:#F1EFE8;color:#444441}
+.badge-blue{background:#E6F1FB;color:#0C447C}
+.reg-table{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.reg-table th{text-align:left;padding:8px 10px;font-weight:500;font-size:11px;color:#888780;border-bottom:0.5px solid #e0ddd6;background:#f8f7f4}
+.reg-table td{padding:9px 10px;border-bottom:0.5px solid #e0ddd6;vertical-align:middle}
+.reg-table tr:last-child td{border-bottom:none}
+.uuid{font-family:"SF Mono",Monaco,monospace;font-size:10px;color:#888780}
+.stat-card{background:#f8f7f4;border-radius:8px;padding:.75rem 1rem}
+.stat-label{font-size:11px;color:#888780;margin-bottom:4px}
+.stat-val{font-size:22px;font-weight:500;color:#1a1a1a}
+.section-label{font-size:11px;font-weight:500;color:#888780;letter-spacing:.04em;margin:1rem 0 .5rem;text-transform:uppercase}
+.check-row{display:flex;align-items:center;gap:8px;font-size:13px;padding:7px 0;border-bottom:0.5px solid #e0ddd6}
+.check-row:last-child{border-bottom:none}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">Advocate Health · CRIO Phenotype Library</div>
+  <div class="topbar-sub">Wake Forest University School of Medicine</div>
+</div>
+
+<div class="container">
+
+<div class="steps" style="margin-top:1.5rem">
+  <div class="step active" id="s1" onclick="showPanel(1)"><span class="step-num">1</span> New project</div>
+  <span class="sep">›</span>
+  <div class="step" id="s2" onclick="showPanel(2)"><span class="step-num">2</span> Validation</div>
+  <span class="sep">›</span>
+  <div class="step" id="s3" onclick="showPanel(3)"><span class="step-num">3</span> Registry</div>
+</div>
+
+<div id="panel1" class="panel">
+  <h2>Initialize a phenotype project</h2>
+  <div id="form-alert"></div>
+  <div class="row">
+    <div class="field"><label>PI full name</label><input id="pi_name" placeholder="Jane Reyes"></div>
+    <div class="field"><label>ORCID iD</label><input id="pi_orcid" placeholder="0000-0000-0000-0000"></div>
+  </div>
+  <div class="row">
+    <div class="field"><label>Institutional email</label><input id="pi_email" placeholder="jane.reyes@advocatehealth.org"></div>
+    <div class="field"><label>Department</label><input id="dept" placeholder="Cardiovascular Epidemiology"></div>
+  </div>
+  <div class="field"><label>Phenotype name</label><input id="ph_name" placeholder="Atrial fibrillation — incident cases"></div>
+  <div class="row3">
+    <div class="field"><label>Domain</label>
+      <select id="domain"><option>condition</option><option>drug</option><option>procedure</option><option>measurement</option><option>observation</option></select>
+    </div>
+    <div class="field"><label>SCE tier</label>
+      <select id="sce_tier">
+        <option value="1">1 — public / de-identified</option>
+        <option value="2">2 — limited dataset</option>
+        <option value="3" selected>3 — OMOP / NEXUS</option>
+        <option value="4">4 — Clarity direct</option>
+        <option value="5">5 — CUI / FISMA</option>
+      </select>
+    </div>
+    <div class="field"><label>Environment</label>
+      <select id="env"><option value="azure_tre">Azure TRE</option><option value="gcp">GCP</option><option value="local">Local</option></select>
+    </div>
+  </div>
+  <div class="row">
+    <div class="field"><label>IRB number</label><input id="irb_num" placeholder="IRB-2026-042"></div>
+    <div class="field"><label>IRB status</label>
+      <select id="irb_status"><option value="">— select —</option><option>active</option><option>exempt</option><option>pending</option></select>
+    </div>
+  </div>
+  <div class="field"><label>Clinical description</label>
+    <textarea id="desc" placeholder="2–5 sentences describing what this phenotype identifies and its intended use..."></textarea>
+  </div>
+  <div class="actions">
+    <button class="btn" onclick="prefill()">Prefill example</button>
+    <button class="btn btn-primary" onclick="submitForm()">Create project →</button>
+  </div>
+</div>
+
+<div id="panel2" class="panel" style="display:none">
+  <h2>Schema validation</h2>
+  <div id="val-result"></div>
+  <div id="val-schema"></div>
+  <div class="actions">
+    <button class="btn" onclick="showPanel(1)">← Edit project</button>
+    <button class="btn btn-primary" id="commit-btn" onclick="commitProject()" style="display:none">Commit to library →</button>
+  </div>
+</div>
+
+<div id="panel3" class="panel" style="display:none">
+  <h2>Phenotype library registry</h2>
+  <div id="registry-stats" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.25rem"></div>
+  <div style="overflow-x:auto;border:0.5px solid #e0ddd6;border-radius:8px">
+    <table class="reg-table">
+      <thead><tr>
+        <th style="width:30%">Phenotype</th>
+        <th style="width:16%">PI</th>
+        <th style="width:12%">Domain</th>
+        <th style="width:16%">Status</th>
+        <th style="width:14%">Deposit eligible</th>
+        <th style="width:12%">Project ID</th>
+      </tr></thead>
+      <tbody id="registry-body"></tbody>
+    </table>
+  </div>
+  <div class="actions" style="margin-top:1rem">
+    <button class="btn" onclick="showPanel(1)">+ New project</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+const ALLOWED = ["wakehealth.edu","wfusm.edu","advocatehealth.org","advocatehealth.com"];
+const ORCID_RE = /^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/;
+
+let registry = [{
+  id:"e79c9476-811d-4bfe-84e1-1fbe4098862f",
+  pi_name:"Erich Huang",
+  pi_orcid:"0000-0002-6585-9429",
+  phenotype_name:"Heart failure with reduced ejection fraction (HFrEF)",
+  domain:"condition",
+  validation_status:"internal_validated",
+  deposit_eligible:true,
+  sce_tier:2,
+  updated:"2026-05-16T14:22:00Z"
+}];
+
+let currentProject = null;
+
+function uuid(){
+  return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{
+    const r=Math.random()*16|0;return(c==='x'?r:(r&0x3|0x8)).toString(16);
+  });
+}
+
+function prefill(){
+  document.getElementById('pi_name').value='Jane Reyes';
+  document.getElementById('pi_orcid').value='0000-0000-0000-0001';
+  document.getElementById('pi_email').value='jane.reyes@advocatehealth.org';
+  document.getElementById('dept').value='Cardiovascular Epidemiology';
+  document.getElementById('ph_name').value='Atrial fibrillation — incident cases';
+  document.getElementById('sce_tier').value='3';
+  document.getElementById('irb_num').value='IRB-2026-042';
+  document.getElementById('irb_status').value='active';
+  document.getElementById('desc').value='Identifies adult patients with a new diagnosis of atrial fibrillation with no prior AF diagnosis in the preceding 24 months. Intended for incident AF cohort assembly for epidemiological research and trial-ready cohort identification across the Advocate Health network.';
+}
+
+function validate(d){
+  const e=[];
+  if(!d.pi_name) e.push("PI name is required");
+  if(!ORCID_RE.test(d.pi_orcid)) e.push("ORCID must match format 0000-0000-0000-0000");
+  if(!ALLOWED.some(x=>d.pi_email.endsWith(x))) e.push("Email must be an institutional address (advocatehealth.org, wakehealth.edu, etc.)");
+  if(!d.dept) e.push("Department is required");
+  if(!d.ph_name) e.push("Phenotype name is required");
+  if(!d.desc||d.desc.length<20) e.push("Clinical description required");
+  if(parseInt(d.sce_tier)>=3){
+    if(!d.irb_num) e.push("IRB number required for SCE tier 3+");
+    if(!d.irb_status) e.push("IRB status required for SCE tier 3+");
+  }
+  return e;
+}
+
+function submitForm(){
+  const d={
+    pi_name:document.getElementById('pi_name').value.trim(),
+    pi_orcid:document.getElementById('pi_orcid').value.trim(),
+    pi_email:document.getElementById('pi_email').value.trim(),
+    dept:document.getElementById('dept').value.trim(),
+    ph_name:document.getElementById('ph_name').value.trim(),
+    domain:document.getElementById('domain').value,
+    sce_tier:document.getElementById('sce_tier').value,
+    env:document.getElementById('env').value,
+    irb_num:document.getElementById('irb_num').value.trim(),
+    irb_status:document.getElementById('irb_status').value,
+    desc:document.getElementById('desc').value.trim(),
+  };
+  const errors=validate(d);
+  const el=document.getElementById('form-alert');
+  if(errors.length){
+    el.innerHTML=`<div class="alert alert-danger"><strong>Schema invalid — ${errors.length} error(s):</strong><ul style="margin:.4rem 0 0 1.2rem">${errors.map(e=>`<li>${e}</li>`).join('')}</ul></div>`;
+    return;
+  }
+  el.innerHTML='';
+  const now=new Date().toISOString();
+  currentProject={id:uuid(),data:d,now};
+  showPanel(2);
+  renderValidation(currentProject);
+}
+
+function renderValidation(proj){
+  const d=proj.data;
+  const sce=parseInt(d.sce_tier);
+  const checks=[
+    {label:"PI ORCID format valid",ok:ORCID_RE.test(d.pi_orcid)},
+    {label:"Institutional email confirmed",ok:ALLOWED.some(x=>d.pi_email.endsWith(x))},
+    {label:"Clinical description populated",ok:d.desc.length>=20},
+    {label:`IRB documentation for SCE tier ${sce}`,ok:sce<3||(!!d.irb_num&&!!d.irb_status)},
+    {label:"Phenotype name present",ok:!!d.ph_name},
+  ];
+  const allOk=checks.every(c=>c.ok);
+  const schema=`project:
+  id: ${proj.id}
+  created: ${proj.now}
+  updated: ${proj.now}
+
+investigator:
+  pi_name: ${d.pi_name}
+  pi_orcid: ${d.pi_orcid}
+  pi_email: ${d.pi_email}
+
+institution:
+  department: ${d.dept}
+  irb_number: ${d.irb_num||'null'}
+  irb_status: ${d.irb_status||'null'}
+
+compute:
+  sce_tier: ${d.sce_tier}
+  environment: ${d.env}
+
+phenotype:
+  name: ${d.ph_name}
+  version: 0.1.0
+  domain: ${d.domain}
+  validation_status: draft
+
+contribution:
+  deposit_eligible: false
+  deposit_submitted: false`;
+
+  document.getElementById('val-result').innerHTML=allOk
+    ?`<div class="alert alert-success"><i class="ti ti-check" style="margin-right:6px"></i>Schema valid — all checks passed. Project ID: <span style="font-family:monospace;font-size:11px">${proj.id}</span></div>`
+    :`<div class="alert alert-danger"><i class="ti ti-x" style="margin-right:6px"></i>Schema invalid — correct errors to proceed</div>`;
+
+  document.getElementById('val-schema').innerHTML=`
+    <div class="section-label">Validation checks</div>
+    <div style="border:0.5px solid #e0ddd6;border-radius:8px;padding:4px 12px;margin-bottom:1rem">
+      ${checks.map(c=>`<div class="check-row"><span style="color:${c.ok?'#3B6D11':'#791F1F'};font-size:16px">${c.ok?'✓':'✗'}</span><span style="color:${c.ok?'#1a1a1a':'#791F1F'}">${c.label}</span></div>`).join('')}
+    </div>
+    <div class="section-label">Generated schema (advocate-phenotype.yaml)</div>
+    <div class="schema-box">${schema}</div>`;
+
+  document.getElementById('commit-btn').style.display=allOk?'block':'none';
+}
+
+function commitProject(){
+  if(!currentProject) return;
+  const d=currentProject.data;
+  registry.unshift({
+    id:currentProject.id,
+    pi_name:d.pi_name,
+    pi_orcid:d.pi_orcid,
+    phenotype_name:d.ph_name,
+    domain:d.domain,
+    validation_status:"draft",
+    deposit_eligible:false,
+    sce_tier:parseInt(d.sce_tier),
+    updated:currentProject.now,
+  });
+  showPanel(3);
+  renderRegistry();
+}
+
+function renderRegistry(){
+  const stats=document.getElementById('registry-stats');
+  const eligible=registry.filter(r=>r.deposit_eligible).length;
+  const validated=registry.filter(r=>r.validation_status!=='draft').length;
+  stats.innerHTML=[
+    {l:'Total phenotypes',v:registry.length},
+    {l:'Deposit eligible',v:eligible},
+    {l:'Validated',v:validated},
+  ].map(s=>`<div class="stat-card"><div class="stat-label">${s.l}</div><div class="stat-val">${s.v}</div></div>`).join('');
+
+  const sb=s=>s==='internal_validated'||s==='peer_reviewed'
+    ?`<span class="badge badge-green">${s.replace('_',' ')}</span>`
+    :s==='draft'?`<span class="badge badge-gray">draft</span>`
+    :`<span class="badge badge-amber">${s}</span>`;
+
+  const eb=e=>e
+    ?`<span class="badge badge-green">eligible</span>`
+    :`<span class="badge badge-gray">not yet</span>`;
+
+  document.getElementById('registry-body').innerHTML=registry.map(r=>`
+    <tr>
+      <td style="font-weight:500">${r.phenotype_name}</td>
+      <td>${r.pi_name}</td>
+      <td><span class="badge badge-blue">${r.domain}</span></td>
+      <td>${sb(r.validation_status)}</td>
+      <td>${eb(r.deposit_eligible)}</td>
+      <td class="uuid">${r.id.slice(0,8)}…</td>
+    </tr>`).join('');
+}
+
+function showPanel(n){
+  [1,2,3].forEach(i=>{
+    document.getElementById(`panel${i}`).style.display=i===n?'block':'none';
+    const s=document.getElementById(`s${i}`);
+    s.className='step'+(i===n?' active':'')+(i<n?' done':'');
+    if(i<n) s.querySelector('.step-num').innerHTML='<i class="ti ti-check" style="font-size:12px"></i>';
+    else s.querySelector('.step-num').textContent=i;
+  });
+  if(n===3) renderRegistry();
+}
+
+renderRegistry();
+</script>
+</body>
+</html>
