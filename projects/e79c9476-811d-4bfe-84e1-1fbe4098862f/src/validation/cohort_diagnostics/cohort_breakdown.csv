@@ -1,0 +1,13 @@
+cohort_definition_id,stratum_1,stratum_2,count_value
+0,gender,Male,8203
+0,gender,Female,6000
+0,age_group,18-44,421
+0,age_group,45-64,3102
+0,age_group,65-74,5841
+0,age_group,75+,4839
+0,year,2018,1203
+0,year,2019,2341
+0,year,2020,1987
+0,year,2021,2801
+0,year,2022,3102
+0,year,2023,2769

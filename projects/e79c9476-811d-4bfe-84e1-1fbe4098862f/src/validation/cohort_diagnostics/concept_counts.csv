@@ -1,0 +1,6 @@
+cohort_definition_id,concept_id,concept_name,domain_id,concept_count,person_count,prevalence_in_cohort
+0,316139,Heart failure,Condition,18420,14203,1.000
+0,4229440,Heart failure with reduced ejection fraction,Condition,12847,11932,0.840
+0,40479492,Left ventricular Ejection fraction,Measurement,9823,9104,0.641
+0,3020891,Left ventricular Ejection fraction by US,Measurement,8201,7893,0.556
+0,4209418,Hospice care,Observation,312,312,0.022
