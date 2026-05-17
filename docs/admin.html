@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CRIO Admin — Advocate Health Phenotype Library</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.44.0/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;font-size:13px;color:#1a1a1a;background:#f8f7f4}
+.topbar{background:#fff;border-bottom:0.5px solid #e0ddd6;padding:0 1.5rem;display:flex;align-items:center;height:48px;gap:16px}
+.topbar-logo{font-size:13px;font-weight:500}
+.topbar-sub{font-size:11px;color:#888780;margin-right:auto}
+.topbar-links{display:flex;gap:12px;font-size:12px}
+.topbar-links a{color:#5F5E5A;text-decoration:none}
+.topbar-links a:hover{color:#1a1a1a}
+.topbar-user{font-size:12px;color:#5F5E5A;display:flex;align-items:center;gap:6px}
+.layout{display:grid;grid-template-columns:180px 1fr;min-height:calc(100vh - 48px)}
+.sidebar{background:#fff;border-right:0.5px solid #e0ddd6;padding:1rem 0}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 16px;font-size:12px;color:#5F5E5A;cursor:pointer;border-left:2px solid transparent}
+.nav-item:hover{background:#f8f7f4;color:#1a1a1a}
+.nav-item.active{color:#1a1a1a;font-weight:500;border-left-color:#1a1a1a;background:#f8f7f4}
+.nav-section{font-size:10px;font-weight:500;color:#b4b2a9;letter-spacing:.06em;padding:12px 16px 4px;text-transform:uppercase}
+.main{padding:1.5rem;overflow-y:auto}
+.view{display:none}
+.view.active{display:block}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.5rem}
+.stat{background:#fff;border:0.5px solid #e0ddd6;border-radius:8px;padding:12px 14px}
+.stat-label{font-size:11px;color:#888780;margin-bottom:4px}
+.stat-val{font-size:22px;font-weight:500;color:#1a1a1a}
+.stat-sub{font-size:11px;color:#888780;margin-top:2px}
+.stat-val.green{color:#27500A}
+.stat-val.amber{color:#633806}
+.stat-val.red{color:#791F1F}
+.card{background:#fff;border:0.5px solid #e0ddd6;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem}
+.card-title{font-size:13px;font-weight:500;margin-bottom:1rem;color:#1a1a1a}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+.tbl th{text-align:left;padding:7px 10px;font-size:11px;font-weight:500;color:#888780;border-bottom:0.5px solid #e0ddd6;background:#f8f7f4}
+.tbl td{padding:8px 10px;border-bottom:0.5px solid #e0ddd6;vertical-align:middle}
+.tbl tr:last-child td{border-bottom:none}
+.tbl tr:hover td{background:#faf9f7}
+.badge{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:3px;white-space:nowrap}
+.bg{background:#EAF3DE;color:#27500A}
+.ba{background:#FAEEDA;color:#633806}
+.bb{background:#E6F1FB;color:#0C447C}
+.br{background:#FCEBEB;color:#791F1F}
+.bp{background:#EEEDFE;color:#3C3489}
+.bgr{background:#F1EFE8;color:#444441}
+.ci-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px}
+.ci-pass{background:#639922}
+.ci-fail{background:#E24B4A}
+.ci-warn{background:#BA7517}
+.ci-run{background:#378ADD}
+.ci-none{background:#B4B2A9}
+.progress-bar{background:#e0ddd6;border-radius:4px;height:6px;overflow:hidden;margin-top:4px}
+.progress-fill{height:100%;border-radius:4px}
+.uuid{font-family:"SF Mono",Monaco,monospace;font-size:10px;color:#888780}
+.filter-row{display:flex;gap:8px;margin-bottom:1rem;align-items:center;flex-wrap:wrap}
+.filter-row select,.filter-row input{padding:5px 9px;border:0.5px solid #c0bdb5;border-radius:6px;font-size:12px;background:#fff;color:#1a1a1a;outline:none}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem}
+.alert-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:0.5px solid #e0ddd6}
+.alert-item:last-child{border-bottom:none}
+.alert-icon{width:28px;height:28px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.ai-red{background:#FCEBEB;color:#791F1F}
+.ai-amber{background:#FAEEDA;color:#633806}
+.ai-blue{background:#E6F1FB;color:#0C447C}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-logo">CRIO Admin</div>
+  <div class="topbar-sub">Advocate Health Phenotype Library · Administrative Console</div>
+  <div class="topbar-links">
+    <a href="index.html">Investigator portal</a>
+  </div>
+  <div class="topbar-user"><i class="ti ti-user" style="font-size:14px" aria-hidden="true"></i> Erich Huang · CRIO</div>
+</div>
+
+<div class="layout">
+<div class="sidebar">
+  <div class="nav-section">Overview</div>
+  <div class="nav-item active" onclick="nav('dashboard',this)"><i class="ti ti-layout-dashboard" style="font-size:14px" aria-hidden="true"></i> Dashboard</div>
+  <div class="nav-item" onclick="nav('library',this)"><i class="ti ti-dna" style="font-size:14px" aria-hidden="true"></i> Phenotype library</div>
+  <div class="nav-section">CI / Runtime</div>
+  <div class="nav-item" onclick="nav('ci-dev',this)"><i class="ti ti-git-pull-request" style="font-size:14px" aria-hidden="true"></i> Dev CI</div>
+  <div class="nav-item" onclick="nav('ci-monitor',this)"><i class="ti ti-activity" style="font-size:14px" aria-hidden="true"></i> Monitoring CI</div>
+  <div class="nav-item" onclick="nav('alerts',this)"><i class="ti ti-bell" style="font-size:14px" aria-hidden="true"></i> Alerts <span style="background:#FCEBEB;color:#791F1F;font-size:10px;padding:1px 6px;border-radius:8px;margin-left:4px">3</span></div>
+  <div class="nav-section">Governance</div>
+  <div class="nav-item" onclick="nav('credits',this)"><i class="ti ti-coin" style="font-size:14px" aria-hidden="true"></i> Credit ledger</div>
+  <div class="nav-item" onclick="nav('queue',this)"><i class="ti ti-list-numbers" style="font-size:14px" aria-hidden="true"></i> Access queue</div>
+  <div class="nav-item" onclick="nav('contributors',this)"><i class="ti ti-users" style="font-size:14px" aria-hidden="true"></i> Contributors</div>
+</div>
+
+<div class="main">
+
+<div id="v-dashboard" class="view active">
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-label">Total phenotypes</div><div class="stat-val">47</div><div class="stat-sub">+3 this month</div></div>
+    <div class="stat"><div class="stat-label">Deposit eligible</div><div class="stat-val green">29</div><div class="stat-sub">62% of library</div></div>
+    <div class="stat"><div class="stat-label">Dev CI passing</div><div class="stat-val green">41</div><div class="stat-sub">6 failing or warning</div></div>
+    <div class="stat"><div class="stat-label">Drift alerts</div><div class="stat-val red">3</div><div class="stat-sub">Requires review</div></div>
+  </div>
+  <div class="row2">
+    <div class="card">
+      <div class="card-title">Library composition</div>
+      <div style="position:relative;height:160px"><canvas id="c-domains" role="img" aria-label="Phenotype count by clinical domain">condition 22, drug 8, procedure 7, measurement 6, observation 4</canvas></div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:11px;color:#5F5E5A">
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:#378ADD"></span>condition 22</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:#1D9E75"></span>drug 8</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:#D85A30"></span>procedure 7</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:#BA7517"></span>measurement 6</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:#7F77DD"></span>observation 4</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Validation status</div>
+      <div style="position:relative;height:160px"><canvas id="c-status" role="img" aria-label="Phenotypes by validation status">peer reviewed 11, internal validated 18, draft 18</canvas></div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:10px;font-size:11px;color:#5F5E5A">
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:#639922"></span>peer reviewed 11</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:#97C459"></span>internal validated 18</span>
+        <span style="display:flex;align-items:center;gap:4px"><span style="width:9px;height:9px;border-radius:2px;background:#B4B2A9"></span>draft 18</span>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Recent activity</div>
+    <table class="tbl">
+      <thead><tr><th style="width:30%">Phenotype</th><th style="width:15%">Contributor</th><th style="width:14%">Event</th><th style="width:12%">SCE tier</th><th style="width:14%">Status</th><th style="width:15%">Date</th></tr></thead>
+      <tbody>
+        <tr><td style="font-weight:500">NSTEMI — quality</td><td>M. Rodriguez</td><td><span class="badge ba">committed</span></td><td><span class="badge bb">tier 3</span></td><td><span class="badge bgr">draft</span></td><td class="uuid">2026-05-16</td></tr>
+        <tr><td style="font-weight:500">HFrEF v1.0</td><td>E. Huang</td><td><span class="badge bg">deposited</span></td><td><span class="badge bb">tier 2</span></td><td><span class="badge bg">validated</span></td><td class="uuid">2026-05-14</td></tr>
+        <tr><td style="font-weight:500">Type 2 diabetes</td><td>J. Patel</td><td><span class="badge bp">exported</span></td><td><span class="badge bb">tier 3</span></td><td><span class="badge bg">peer reviewed</span></td><td class="uuid">2026-05-12</td></tr>
+        <tr><td style="font-weight:500">Atrial fibrillation</td><td>S. Okonkwo</td><td><span class="badge ba">ci warning</span></td><td><span class="badge bb">tier 3</span></td><td><span class="badge bg">validated</span></td><td class="uuid">2026-05-10</td></tr>
+        <tr><td style="font-weight:500">CKD stage 3+</td><td>L. Chen</td><td><span class="badge br">drift alert</span></td><td><span class="badge bb">tier 3</span></td><td><span class="badge bg">validated</span></td><td class="uuid">2026-05-08</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="v-library" class="view">
+  <div class="filter-row">
+    <select id="f-domain" onchange="filterLib()"><option value="">All domains</option><option>condition</option><option>drug</option><option>procedure</option><option>measurement</option><option>observation</option></select>
+    <select id="f-status" onchange="filterLib()"><option value="">All statuses</option><option>draft</option><option>internal_validated</option><option>peer_reviewed</option></select>
+    <select id="f-tier" onchange="filterLib()"><option value="">All SCE tiers</option><option>1</option><option>2</option><option>3</option><option>4</option></select>
+    <input id="f-search" placeholder="Search phenotypes..." oninput="filterLib()" style="flex:1;min-width:160px">
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="tbl" id="lib-table">
+      <thead><tr>
+        <th style="width:26%">Phenotype</th><th style="width:13%">Contributor</th><th style="width:10%">Domain</th>
+        <th style="width:8%">Tier</th><th style="width:14%">Validation</th><th style="width:9%">PPV</th>
+        <th style="width:11%">Dev CI</th><th style="width:9%">Deposit</th>
+      </tr></thead>
+      <tbody id="lib-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="v-ci-dev" class="view">
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-label">Passing</div><div class="stat-val green">41</div></div>
+    <div class="stat"><div class="stat-label">Failing</div><div class="stat-val red">4</div></div>
+    <div class="stat"><div class="stat-label">Warning</div><div class="stat-val amber">2</div></div>
+    <div class="stat"><div class="stat-label">Running</div><div class="stat-val">1</div></div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="tbl">
+      <thead><tr>
+        <th style="width:28%">Phenotype</th><th style="width:10%">Version</th><th style="width:10%">Status</th>
+        <th style="width:13%">Person count</th><th style="width:9%">Sites</th>
+        <th style="width:13%">Last run</th><th style="width:17%">Failure reason</th>
+      </tr></thead>
+      <tbody id="ci-dev-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="v-ci-monitor" class="view">
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-label">Deployed phenotypes</div><div class="stat-val">18</div></div>
+    <div class="stat"><div class="stat-label">Stable</div><div class="stat-val green">15</div></div>
+    <div class="stat"><div class="stat-label">Drift detected</div><div class="stat-val red">3</div></div>
+    <div class="stat"><div class="stat-label">Next scheduled run</div><div class="stat-val" style="font-size:14px">Jun 1</div></div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="tbl">
+      <thead><tr>
+        <th style="width:24%">Phenotype</th><th style="width:10%">Version</th><th style="width:10%">Status</th>
+        <th style="width:13%">Baseline</th><th style="width:13%">Current</th>
+        <th style="width:10%">Delta</th><th style="width:20%">Drift flags</th>
+      </tr></thead>
+      <tbody id="ci-monitor-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="v-alerts" class="view">
+  <div class="card">
+    <div class="card-title">Active alerts</div>
+    <div class="alert-item">
+      <div class="alert-icon ai-red"><i class="ti ti-alert-triangle" style="font-size:14px" aria-hidden="true"></i></div>
+      <div>
+        <div style="font-weight:500;font-size:12px">CKD stage 3+ — count drift +41%</div>
+        <div style="color:#5F5E5A;margin-top:2px;font-size:12px">Person count rose from 8,203 to 11,561. Exceeds 15% drift threshold. Possible new site onboarding or coding practice change. Review required before next reporting cycle.</div>
+        <div style="margin-top:6px;display:flex;gap:6px"><span class="badge br">high severity</span><span class="badge bgr">monitoring CI</span><span class="badge bgr">2026-05-08</span></div>
+      </div>
+    </div>
+    <div class="alert-item">
+      <div class="alert-icon ai-red"><i class="ti ti-alert-triangle" style="font-size:14px" aria-hidden="true"></i></div>
+      <div>
+        <div style="font-weight:500;font-size:12px">Sepsis — site dropout detected</div>
+        <div style="color:#5F5E5A;margin-top:2px;font-size:12px">Advocate Sherman dropped to zero cases this month. ETL failure suspected — no records from Sherman in condition_occurrence since 2026-04-28. IT ticket filed.</div>
+        <div style="margin-top:6px;display:flex;gap:6px"><span class="badge br">high severity</span><span class="badge bgr">monitoring CI</span><span class="badge bgr">2026-05-09</span></div>
+      </div>
+    </div>
+    <div class="alert-item">
+      <div class="alert-icon ai-amber"><i class="ti ti-info-circle" style="font-size:14px" aria-hidden="true"></i></div>
+      <div>
+        <div style="font-weight:500;font-size:12px">Atrial fibrillation — cohort count below minimum</div>
+        <div style="color:#5F5E5A;margin-top:2px;font-size:12px">Dev CI run returned 312 persons against a minimum of 500. Exclusion criteria may be over-specified. Contributor notified.</div>
+        <div style="margin-top:6px;display:flex;gap:6px"><span class="badge ba">medium severity</span><span class="badge bgr">dev CI</span><span class="badge bgr">2026-05-10</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="v-credits" class="view">
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-label">Total credits issued</div><div class="stat-val">143</div></div>
+    <div class="stat"><div class="stat-label">Credits redeemed</div><div class="stat-val">89</div></div>
+    <div class="stat"><div class="stat-label">Credits outstanding</div><div class="stat-val green">54</div></div>
+    <div class="stat"><div class="stat-label">Deposits this quarter</div><div class="stat-val">12</div></div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="tbl">
+      <thead><tr>
+        <th style="width:16%">Contributor</th><th style="width:13%">Identifier</th><th style="width:13%">Role</th>
+        <th style="width:9%">Deposits</th><th style="width:11%">Credits earned</th>
+        <th style="width:10%">Credits used</th><th style="width:9%">Balance</th>
+        <th style="width:19%">Queue priority</th>
+      </tr></thead>
+      <tbody>
+        <tr><td style="font-weight:500">J. Patel</td><td class="uuid">ORCID</td><td><span class="badge bb">researcher</span></td><td>7</td><td>21</td><td>12</td><td><strong style="color:#27500A">9</strong></td><td><div class="progress-bar"><div class="progress-fill" style="width:90%;background:#639922"></div></div></td></tr>
+        <tr><td style="font-weight:500">S. Okonkwo</td><td class="uuid">ORCID</td><td><span class="badge bb">researcher</span></td><td>5</td><td>15</td><td>9</td><td><strong style="color:#27500A">6</strong></td><td><div class="progress-bar"><div class="progress-fill" style="width:60%;background:#639922"></div></div></td></tr>
+        <tr><td style="font-weight:500">E. Huang</td><td class="uuid">ORCID</td><td><span class="badge bb">researcher</span></td><td>4</td><td>12</td><td>9</td><td><strong style="color:#27500A">3</strong></td><td><div class="progress-bar"><div class="progress-fill" style="width:30%;background:#639922"></div></div></td></tr>
+        <tr><td style="font-weight:500">M. Rodriguez</td><td class="uuid">Staff ID</td><td><span class="badge bp">data scientist</span></td><td>3</td><td>9</td><td>6</td><td><strong style="color:#27500A">3</strong></td><td><div class="progress-bar"><div class="progress-fill" style="width:30%;background:#639922"></div></div></td></tr>
+        <tr><td style="font-weight:500">P. Osei</td><td class="uuid">Staff ID</td><td><span class="badge ba">quality analyst</span></td><td>2</td><td>6</td><td>3</td><td><strong style="color:#27500A">3</strong></td><td><div class="progress-bar"><div class="progress-fill" style="width:30%;background:#639922"></div></div></td></tr>
+        <tr><td style="font-weight:500">L. Chen</td><td class="uuid">ORCID</td><td><span class="badge bb">researcher</span></td><td>2</td><td>6</td><td>6</td><td><strong style="color:#888">0</strong></td><td><div class="progress-bar"><div class="progress-fill" style="width:0%;background:#639922"></div></div></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="v-queue" class="view">
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-label">Queue depth (SCE 3)</div><div class="stat-val">8</div></div>
+    <div class="stat"><div class="stat-label">Avg wait (cycles)</div><div class="stat-val amber">2.4</div></div>
+    <div class="stat"><div class="stat-label">Pool utilization</div><div class="stat-val amber">81%</div></div>
+    <div class="stat"><div class="stat-label">Next clearing</div><div class="stat-val" style="font-size:14px">May 23</div></div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="tbl">
+      <thead><tr>
+        <th style="width:5%">Pos.</th><th style="width:18%">Investigator</th><th style="width:22%">Project</th>
+        <th style="width:10%">SCE tier</th><th style="width:12%">Submitted</th>
+        <th style="width:11%">Credit bump</th><th style="width:11%">Deadline</th><th style="width:11%">Status</th>
+      </tr></thead>
+      <tbody>
+        <tr><td style="font-weight:500">1</td><td>J. Patel</td><td>T2D + CKD comorbidity</td><td><span class="badge bb">tier 3</span></td><td class="uuid">2026-05-02</td><td><span class="badge bg">+3 slots</span></td><td class="uuid">2026-06-01</td><td><span class="badge bg">clearing</span></td></tr>
+        <tr><td style="font-weight:500">2</td><td>S. Okonkwo</td><td>AF burden post-ablation</td><td><span class="badge bb">tier 3</span></td><td class="uuid">2026-05-05</td><td><span class="badge bg">+3 slots</span></td><td>—</td><td><span class="badge bgr">queued</span></td></tr>
+        <tr><td style="font-weight:500">3</td><td>M. Rodriguez</td><td>NSTEMI quality v2</td><td><span class="badge bb">tier 3</span></td><td class="uuid">2026-05-08</td><td><span class="badge bg">+3 slots</span></td><td class="uuid">2026-06-15</td><td><span class="badge bgr">queued</span></td></tr>
+        <tr><td style="font-weight:500">4</td><td>R. Kim</td><td>Pediatric asthma severity</td><td><span class="badge bb">tier 3</span></td><td class="uuid">2026-05-09</td><td><span class="badge bgr">none</span></td><td>—</td><td><span class="badge bgr">queued</span></td></tr>
+        <tr><td style="font-weight:500">5</td><td>T. Adeyemi</td><td>Hypertension control gaps</td><td><span class="badge bb">tier 3</span></td><td class="uuid">2026-05-11</td><td><span class="badge bgr">none</span></td><td>—</td><td><span class="badge bgr">queued</span></td></tr>
+        <tr><td style="font-weight:500">6</td><td>L. Chen</td><td>ESRD progression markers</td><td><span class="badge br">tier 4</span></td><td class="uuid">2026-05-12</td><td><span class="badge bgr">none</span></td><td>—</td><td><span class="badge ba">IRB pending</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<div id="v-contributors" class="view">
+  <div class="stat-grid">
+    <div class="stat"><div class="stat-label">Active contributors</div><div class="stat-val">23</div></div>
+    <div class="stat"><div class="stat-label">Departments</div><div class="stat-val">11</div></div>
+    <div class="stat"><div class="stat-label">Researchers</div><div class="stat-val">14</div></div>
+    <div class="stat"><div class="stat-label">Clinical ops / quality</div><div class="stat-val">9</div></div>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table class="tbl">
+      <thead><tr>
+        <th style="width:16%">Name</th><th style="width:18%">Department</th><th style="width:12%">Role</th>
+        <th style="width:11%">Identifier</th><th style="width:9%">Phenotypes</th>
+        <th style="width:8%">Deposits</th><th style="width:8%">Credits</th><th style="width:18%">Recent phenotype</th>
+      </tr></thead>
+      <tbody>
+        <tr><td style="font-weight:500">J. Patel</td><td>Cardiovascular Epi</td><td><span class="badge bb">researcher</span></td><td class="uuid">ORCID</td><td>7</td><td>7</td><td>9</td><td>T2D + CKD comorbidity</td></tr>
+        <tr><td style="font-weight:500">S. Okonkwo</td><td>Cardiac Electrophysiology</td><td><span class="badge bb">researcher</span></td><td class="uuid">ORCID</td><td>5</td><td>5</td><td>6</td><td>AF burden post-ablation</td></tr>
+        <tr><td style="font-weight:500">E. Huang</td><td>Research Informatics</td><td><span class="badge bb">researcher</span></td><td class="uuid">ORCID</td><td>4</td><td>4</td><td>3</td><td>HFrEF v1.0</td></tr>
+        <tr><td style="font-weight:500">M. Rodriguez</td><td>CV National Service Line</td><td><span class="badge bp">data scientist</span></td><td class="uuid">Staff ID</td><td>3</td><td>3</td><td>3</td><td>NSTEMI quality</td></tr>
+        <tr><td style="font-weight:500">P. Osei</td><td>CV Quality</td><td><span class="badge ba">quality analyst</span></td><td class="uuid">Staff ID</td><td>2</td><td>2</td><td>3</td><td>NSTEMI adjudication</td></tr>
+        <tr><td style="font-weight:500">L. Chen</td><td>Nephrology</td><td><span class="badge bb">researcher</span></td><td class="uuid">ORCID</td><td>3</td><td>2</td><td>0</td><td>CKD stage 3+</td></tr>
+        <tr><td style="font-weight:500">R. Kim</td><td>Pediatrics</td><td><span class="badge bb">researcher</span></td><td class="uuid">ORCID</td><td>2</td><td>1</td><td>0</td><td>Pediatric asthma</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+</div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+const PHENOTYPES=[
+  {name:"Heart failure with reduced EF (HFrEF)",contributor:"E. Huang",domain:"condition",tier:2,status:"internal_validated",ppv:0.963,ci:"pass",deposit:true},
+  {name:"NSTEMI — quality reporting",contributor:"M. Rodriguez",domain:"condition",tier:3,status:"draft",ppv:null,ci:"run",deposit:false},
+  {name:"Type 2 diabetes mellitus",contributor:"J. Patel",domain:"condition",tier:3,status:"peer_reviewed",ppv:0.941,ci:"pass",deposit:true},
+  {name:"Atrial fibrillation — incident",contributor:"S. Okonkwo",domain:"condition",tier:3,status:"internal_validated",ppv:0.887,ci:"warn",deposit:true},
+  {name:"CKD stage 3+",contributor:"L. Chen",domain:"condition",tier:3,status:"internal_validated",ppv:0.912,ci:"pass",deposit:true},
+  {name:"Sepsis — hospital acquired",contributor:"T. Adeyemi",domain:"condition",tier:4,status:"peer_reviewed",ppv:0.958,ci:"fail",deposit:true},
+  {name:"Hypertension — uncontrolled",contributor:"T. Adeyemi",domain:"condition",tier:3,status:"draft",ppv:null,ci:"warn",deposit:false},
+  {name:"Warfarin — chronic use",contributor:"J. Patel",domain:"drug",tier:2,status:"peer_reviewed",ppv:0.972,ci:"pass",deposit:true},
+  {name:"Metformin initiation",contributor:"J. Patel",domain:"drug",tier:2,status:"internal_validated",ppv:null,ci:"pass",deposit:true},
+  {name:"SGLT2 inhibitor use",contributor:"J. Patel",domain:"drug",tier:2,status:"draft",ppv:null,ci:"pass",deposit:false},
+  {name:"Coronary angiography",contributor:"S. Okonkwo",domain:"procedure",tier:3,status:"internal_validated",ppv:0.951,ci:"pass",deposit:true},
+  {name:"Echocardiography — transthoracic",contributor:"E. Huang",domain:"procedure",tier:2,status:"peer_reviewed",ppv:0.989,ci:"pass",deposit:true},
+  {name:"Cardiac catheterization",contributor:"S. Okonkwo",domain:"procedure",tier:3,status:"draft",ppv:null,ci:"fail",deposit:false},
+  {name:"LVEF — echocardiographic",contributor:"E. Huang",domain:"measurement",tier:2,status:"internal_validated",ppv:null,ci:"pass",deposit:true},
+  {name:"Troponin elevation — high sensitivity",contributor:"M. Rodriguez",domain:"measurement",tier:3,status:"draft",ppv:null,ci:"pass",deposit:false},
+  {name:"Pediatric asthma severity",contributor:"R. Kim",domain:"condition",tier:3,status:"draft",ppv:null,ci:"fail",deposit:false},
+  {name:"Smoking status — current",contributor:"P. Osei",domain:"observation",tier:1,status:"peer_reviewed",ppv:0.923,ci:"pass",deposit:true},
+  {name:"Advance directive documented",contributor:"P. Osei",domain:"observation",tier:1,status:"internal_validated",ppv:null,ci:"pass",deposit:true},
+];
+
+const CI_DEV=[
+  {name:"Sepsis — hospital acquired",ver:"1.2.0",status:"fail",count:0,sites:0,run:"2026-05-15",reason:"count below min (0 < 500)"},
+  {name:"Cardiac catheterization",ver:"0.3.0",status:"fail",count:0,sites:0,run:"2026-05-14",reason:"NEXUS timeout"},
+  {name:"Pediatric asthma severity",ver:"0.2.0",status:"fail",count:312,sites:3,run:"2026-05-13",reason:"count below min (312 < 500)"},
+  {name:"ESRD progression markers",ver:"0.1.0",status:"fail",count:0,sites:0,run:"2026-05-12",reason:"IRB not active"},
+  {name:"Atrial fibrillation",ver:"0.8.1",status:"warn",count:4102,sites:6,run:"2026-05-10",reason:"gender parity 78% (>75%)"},
+  {name:"Hypertension — uncontrolled",ver:"0.4.0",status:"warn",count:18203,sites:9,run:"2026-05-09",reason:"count near max (18203 of 20000)"},
+  {name:"HFrEF",ver:"1.0.0",status:"pass",count:14203,sites:9,run:"2026-05-14",reason:"—"},
+  {name:"Type 2 diabetes",ver:"2.1.0",status:"pass",count:41820,sites:9,run:"2026-05-13",reason:"—"},
+  {name:"NSTEMI — quality",ver:"0.1.0",status:"run",count:"—",sites:"—",run:"running…",reason:"—"},
+];
+
+const CI_MONITOR=[
+  {name:"CKD stage 3+",ver:"1.0.0",status:"fail",baseline:8203,current:11561,flags:["count +41%"]},
+  {name:"Sepsis — hospital acquired",ver:"1.2.0",status:"fail",baseline:2103,current:841,flags:["site dropout: Sherman"]},
+  {name:"Type 2 diabetes",ver:"2.1.0",status:"warn",baseline:38201,current:41820,flags:["count +9.5%"]},
+  {name:"HFrEF",ver:"1.0.0",status:"pass",baseline:14203,current:14318,flags:[]},
+  {name:"Warfarin — chronic use",ver:"1.1.0",status:"pass",baseline:9821,current:9734,flags:[]},
+  {name:"Smoking status",ver:"1.0.0",status:"pass",baseline:52301,current:53102,flags:[]},
+  {name:"Coronary angiography",ver:"1.0.0",status:"pass",baseline:3201,current:3189,flags:[]},
+];
+
+function ciDot(s){
+  const m={pass:"ci-pass",fail:"ci-fail",warn:"ci-warn",run:"ci-run",none:"ci-none"};
+  const l={pass:"passing",fail:"failing",warn:"warning",run:"running",none:"—"};
+  return '<span class="ci-dot '+(m[s]||"ci-none")+'"></span>'+(l[s]||s);
+}
+
+function renderLib(){
+  const domain=document.getElementById("f-domain").value;
+  const status=document.getElementById("f-status").value;
+  const tier=document.getElementById("f-tier").value;
+  const search=document.getElementById("f-search").value.toLowerCase();
+  const filtered=PHENOTYPES.filter(p=>
+    (!domain||p.domain===domain)&&
+    (!status||p.status===status)&&
+    (!tier||p.tier===parseInt(tier))&&
+    (!search||p.name.toLowerCase().includes(search)||p.contributor.toLowerCase().includes(search))
+  );
+  const sb=s=>({peer_reviewed:'<span class="badge bg">peer reviewed</span>',internal_validated:'<span class="badge bg" style="background:#EAF3DE;color:#3B6D11">int. validated</span>',draft:'<span class="badge bgr">draft</span>'}[s]||s);
+  document.getElementById("lib-body").innerHTML=filtered.map(p=>`<tr>
+    <td style="font-weight:500">${p.name}</td><td>${p.contributor}</td>
+    <td><span class="badge bb">${p.domain}</span></td>
+    <td><span class="badge bgr">tier ${p.tier}</span></td>
+    <td>${sb(p.status)}</td>
+    <td>${p.ppv?'<strong>'+(p.ppv*100).toFixed(1)+'%</strong>':'<span style="color:#b4b2a9">—</span>'}</td>
+    <td>${ciDot(p.ci)}</td>
+    <td>${p.deposit?'<span class="badge bg">eligible</span>':'<span class="badge bgr">not yet</span>'}</td>
+  </tr>`).join("");
+}
+
+function filterLib(){renderLib()}
+
+function renderCIDev(){
+  document.getElementById("ci-dev-body").innerHTML=CI_DEV.map(r=>`<tr>
+    <td style="font-weight:500">${r.name}</td><td class="uuid">${r.ver}</td>
+    <td>${ciDot(r.status)}</td>
+    <td>${typeof r.count==="number"?r.count.toLocaleString():r.count}</td>
+    <td>${r.sites}</td><td class="uuid">${r.run}</td>
+    <td style="color:${r.status==="fail"?"#791F1F":r.status==="warn"?"#633806":"#888780"};font-size:11px">${r.reason}</td>
+  </tr>`).join("");
+}
+
+function renderCIMonitor(){
+  document.getElementById("ci-monitor-body").innerHTML=CI_MONITOR.map(r=>{
+    const delta=((r.current-r.baseline)/r.baseline*100);
+    const ds=(delta>=0?"+":"")+delta.toFixed(1)+"%";
+    const dc=Math.abs(delta)>15?"#791F1F":Math.abs(delta)>8?"#633806":"#3B6D11";
+    return '<tr><td style="font-weight:500">'+r.name+'</td><td class="uuid">'+r.ver+'</td><td>'+ciDot(r.status)+'</td><td>'+r.baseline.toLocaleString()+'</td><td>'+r.current.toLocaleString()+'</td><td style="color:'+dc+';font-weight:500">'+ds+'</td><td>'+
+      (r.flags.map(f=>'<span class="badge br" style="margin-right:3px">'+f+'</span>').join("")||'<span style="color:#888">none</span>')+'</td></tr>';
+  }).join("");
+}
+
+function nav(id,el){
+  document.querySelectorAll(".nav-item").forEach(n=>n.classList.remove("active"));
+  document.querySelectorAll(".view").forEach(v=>v.classList.remove("active"));
+  el.classList.add("active");
+  document.getElementById("v-"+id).classList.add("active");
+}
+
+new Chart(document.getElementById("c-domains"),{type:"doughnut",data:{labels:["condition","drug","procedure","measurement","observation"],datasets:[{data:[22,8,7,6,4],backgroundColor:["#378ADD","#1D9E75","#D85A30","#BA7517","#7F77DD"],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+new Chart(document.getElementById("c-status"),{type:"doughnut",data:{labels:["peer reviewed","internal validated","draft"],datasets:[{data:[11,18,18],backgroundColor:["#639922","#97C459","#B4B2A9"],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}}}});
+
+renderLib();renderCIDev();renderCIMonitor();
+</script>
+</body>
+</html>
