@@ -1,0 +1,140 @@
+name: Schema Validation
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'projects/**/advocate-phenotype.yaml'
+      - 'registry.yaml'
+
+jobs:
+  validate-schemas:
+    name: Validate phenotype schemas
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      statuses: write
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install crio and dependencies
+        run: |
+          pip install --quiet \
+            pydantic~=2.0 \
+            pyyaml \
+            gitpython \
+            "git+https://github.com/advocate-phenotype-dev/crio-py.git" \
+          || pip install --quiet crio-py pydantic pyyaml gitpython
+
+      - name: Identify changed schemas
+        id: changed
+        run: |
+          git fetch origin ${{ github.base_ref }} --depth=1
+          CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD \
+                    | grep '^projects/.*/advocate-phenotype\.yaml$' || true)
+          echo "Changed schemas in this PR:"
+          echo "${CHANGED:-  (none)"
+          echo "changed_schemas<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$CHANGED"            >> "$GITHUB_OUTPUT"
+          echo "EOF"                 >> "$GITHUB_OUTPUT"
+
+      - name: Validate all phenotype schemas
+        id: validate
+        run: |
+          python - <<'PYEOF'
+          import sys
+          from pathlib import Path
+
+          try:
+              from crio.validate import validate
+          except ImportError:
+              # Fallback: inline validation using pydantic + yaml
+              print("crio not importable — running inline validation")
+              import yaml
+              from pydantic import ValidationError
+
+              sys.path.insert(0, ".")
+              from crio.validate import validate  # re-raise if still missing
+
+          failures = []
+          successes = []
+
+          for yaml_path in sorted(Path("projects").glob("**/advocate-phenotype.yaml")):
+              project_dir = yaml_path.parent
+              report = validate(project_dir)
+              if report.valid:
+                  successes.append(project_dir.name)
+                  schema = report.schema
+                  print(f"  ✓ {project_dir.name}")
+                  print(f"      {schema.phenotype.name} v{schema.phenotype.version}"
+                        f" | tier {schema.compute.sce_tier.value}"
+                        f" | {schema.phenotype.validation_status.value}"
+                        f" | deposit_eligible={schema.contribution.deposit_eligible}")
+              else:
+                  failures.append(project_dir.name)
+                  print(f"  ✗ {project_dir.name}")
+                  report.print_report()
+
+          print(f"\n{len(successes)} schema(s) valid, {len(failures)} failure(s).")
+          if failures:
+              print(f"Failed: {failures}")
+              sys.exit(1)
+          PYEOF
+
+      - name: Verify registry.yaml is consistent
+        run: |
+          python - <<'PYEOF'
+          import sys
+          import yaml
+          from pathlib import Path
+
+          reg_path = Path("registry.yaml")
+          if not reg_path.exists():
+              print("registry.yaml not found — skipping consistency check")
+              sys.exit(0)
+
+          with open(reg_path) as f:
+              registry = yaml.safe_load(f) or {}
+
+          project_ids_in_registry = {p["id"] for p in registry.get("projects", [])}
+          project_dirs = {p.parent.name for p in Path("projects").glob("**/advocate-phenotype.yaml")}
+
+          orphaned = project_ids_in_registry - project_dirs
+          unregistered = project_dirs - project_ids_in_registry
+
+          if orphaned:
+              print(f"  ⚠  Registry entries with no project directory: {orphaned}")
+          if unregistered:
+              print(f"  ⚠  Project directories not in registry: {unregistered}")
+          if not orphaned and not unregistered:
+              print(f"  ✓ registry.yaml consistent ({len(project_ids_in_registry)} project(s))")
+          PYEOF
+
+      - name: Post validation summary to PR
+        if: always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const outcome = '${{ steps.validate.outcome }}';
+            const icon    = outcome === 'success' ? '✅' : '❌';
+            const status  = outcome === 'success'
+              ? 'All phenotype schemas are valid.'
+              : 'One or more schemas failed validation — see job logs for details.';
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner:        context.repo.owner,
+              repo:         context.repo.repo,
+              body: `## ${icon} Schema Validation\n\n${status}\n\n` +
+                    `_Run by [schema-validation.yml](/.github/workflows/schema-validation.yml)_`,
+            });
