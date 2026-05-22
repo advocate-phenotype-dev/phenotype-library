@@ -1,0 +1,235 @@
+{
+  "cdmVersionRange": ">=5.3.0",
+  "ConceptSets": [
+    {
+      "id": 0,
+      "name": "NSTEMI (OMOP 314666 / ICD-10 I21.4)",
+      "expression": {
+        "items": [
+          {
+            "concept": {
+              "CONCEPT_ID": 314666,
+              "CONCEPT_NAME": "Non-ST elevation myocardial infarction",
+              "STANDARD_CONCEPT": "S",
+              "STANDARD_CONCEPT_CAPTION": "Standard",
+              "INVALID_REASON": "V",
+              "INVALID_REASON_CAPTION": "Valid",
+              "CONCEPT_CODE": "65547006",
+              "DOMAIN_ID": "Condition",
+              "VOCABULARY_ID": "SNOMED",
+              "CONCEPT_CLASS_ID": "Clinical Finding"
+            },
+            "isExcluded": false,
+            "includeDescendants": true,
+            "includeMapped": true
+          }
+        ]
+      }
+    },
+    {
+      "id": 1,
+      "name": "hs-Troponin I cardiac (LOINC 10839-9 / OMOP 3016502)",
+      "expression": {
+        "items": [
+          {
+            "concept": {
+              "CONCEPT_ID": 3016502,
+              "CONCEPT_NAME": "Troponin I.cardiac [Mass/volume] in Serum or Plasma",
+              "STANDARD_CONCEPT": "S",
+              "STANDARD_CONCEPT_CAPTION": "Standard",
+              "INVALID_REASON": "V",
+              "INVALID_REASON_CAPTION": "Valid",
+              "CONCEPT_CODE": "10839-9",
+              "DOMAIN_ID": "Measurement",
+              "VOCABULARY_ID": "LOINC",
+              "CONCEPT_CLASS_ID": "Lab Test"
+            },
+            "isExcluded": false,
+            "includeDescendants": false,
+            "includeMapped": false
+          }
+        ]
+      }
+    },
+    {
+      "id": 2,
+      "name": "STEMI (exclusion) — OMOP 312327 / ICD-10 I21.0–I21.3",
+      "expression": {
+        "items": [
+          {
+            "concept": {
+              "CONCEPT_ID": 312327,
+              "CONCEPT_NAME": "Acute myocardial infarction",
+              "STANDARD_CONCEPT": "S",
+              "STANDARD_CONCEPT_CAPTION": "Standard",
+              "INVALID_REASON": "V",
+              "INVALID_REASON_CAPTION": "Valid",
+              "CONCEPT_CODE": "57054005",
+              "DOMAIN_ID": "Condition",
+              "VOCABULARY_ID": "SNOMED",
+              "CONCEPT_CLASS_ID": "Clinical Finding"
+            },
+            "isExcluded": false,
+            "includeDescendants": false,
+            "includeMapped": true
+          }
+        ]
+      }
+    }
+  ],
+  "PrimaryCriteria": {
+    "CriteriaList": [
+      {
+        "ConditionOccurrence": {
+          "CodesetId": 0,
+          "ConditionType": [
+            {
+              "CONCEPT_ID": 32817,
+              "CONCEPT_NAME": "EHR Visit Diagnosis",
+              "STANDARD_CONCEPT": "S",
+              "INVALID_REASON": "V",
+              "CONCEPT_CODE": "EHR Visit Diagnosis",
+              "DOMAIN_ID": "Type Concept",
+              "VOCABULARY_ID": "Condition Type",
+              "CONCEPT_CLASS_ID": "Condition Type"
+            },
+            {
+              "CONCEPT_ID": 32020,
+              "CONCEPT_NAME": "EHR problem list entry",
+              "STANDARD_CONCEPT": "S",
+              "INVALID_REASON": "V",
+              "CONCEPT_CODE": "EHR problem list entry",
+              "DOMAIN_ID": "Type Concept",
+              "VOCABULARY_ID": "Condition Type",
+              "CONCEPT_CLASS_ID": "Condition Type"
+            }
+          ],
+          "ConditionTypeExclude": false,
+          "OccurrenceStartDate": {
+            "Value": "2020-01-01",
+            "Op": "gte"
+          }
+        }
+      }
+    ],
+    "ObservationWindow": {
+      "PriorDays": 365,
+      "PostDays": 0
+    },
+    "PrimaryCriteriaLimit": {
+      "Type": "First"
+    }
+  },
+  "QualifiedLimit": {
+    "Type": "First"
+  },
+  "ExpressionLimit": {
+    "Type": "First"
+  },
+  "InclusionRules": [
+    {
+      "name": "hs-TnI > 2x ULN within 24h of index NSTEMI",
+      "description": "High-sensitivity cardiac troponin I (LOINC 10839-9) must be > 2x the upper limit of normal (ULN = 34 ng/L; threshold = 68 ng/L) within 24 hours of the index NSTEMI condition occurrence date.",
+      "expression": {
+        "Type": "ALL",
+        "CriteriaList": [
+          {
+            "Criteria": {
+              "Measurement": {
+                "CodesetId": 1,
+                "MeasurementValue": {
+                  "Value": 68.0,
+                  "Op": "gt",
+                  "Extent": null
+                },
+                "RangeHigh": {
+                  "Value": 34.0,
+                  "Op": "lte",
+                  "Extent": null
+                }
+              }
+            },
+            "StartWindow": {
+              "Start": {
+                "Coeff": -1,
+                "Days": 0
+              },
+              "End": {
+                "Coeff": 1,
+                "Days": 1
+              },
+              "UseIndexEnd": false,
+              "UseEventEnd": false
+            },
+            "EndWindow": null,
+            "RestrictVisit": false,
+            "IgnoreObservationPeriod": false,
+            "Occurrence": {
+              "Type": 2,
+              "Count": 1,
+              "IsDistinct": false
+            }
+          }
+        ],
+        "DemographicCriteriaList": [],
+        "Groups": []
+      }
+    },
+    {
+      "name": "No concurrent STEMI",
+      "description": "Exclude patients with a concurrent STEMI diagnosis (ICD-10 I21.0–I21.3) within the same encounter window. STEMI patients are managed on a separate quality pathway.",
+      "expression": {
+        "Type": "ALL",
+        "CriteriaList": [
+          {
+            "Criteria": {
+              "ConditionOccurrence": {
+                "CodesetId": 2
+              }
+            },
+            "StartWindow": {
+              "Start": {
+                "Coeff": -1,
+                "Days": 1
+              },
+              "End": {
+                "Coeff": 1,
+                "Days": 1
+              },
+              "UseIndexEnd": false,
+              "UseEventEnd": false
+            },
+            "EndWindow": null,
+            "RestrictVisit": false,
+            "IgnoreObservationPeriod": false,
+            "Occurrence": {
+              "Type": 0,
+              "Count": 0,
+              "IsDistinct": false
+            }
+          }
+        ],
+        "DemographicCriteriaList": [],
+        "Groups": []
+      }
+    }
+  ],
+  "EndStrategy": {
+    "DateOffset": {
+      "DateField": "EndDate",
+      "Offset": 0
+    }
+  },
+  "CensoringCriteria": [],
+  "CollapseSettings": {
+    "CollapseType": "ERA",
+    "EraPad": 0
+  },
+  "CensorWindow": {},
+  "meta": {
+    "format_version": "1",
+    "created": "2026-01-15",
+    "created_by": "crio v0.1.0",
+    "notes": "v0.1.0 — entry criterion only (ICD-10 OMOP mapping). v0.2.0 tightens with hs-TnI inclusion rule."
+  }
+}
