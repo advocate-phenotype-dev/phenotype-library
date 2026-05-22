@@ -3,7 +3,7 @@
 **PI:** Dr. Alicia Vance (0000-0003-7291-4856)
 **Domain:** condition
 **SCE Tier:** 3
-**Version:** 0.1.0
+**Version:** 0.2.0
 **Status:** draft
 
 ## Description
