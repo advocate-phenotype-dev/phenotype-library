@@ -42,7 +42,7 @@ jobs:
           CHANGED=$(git diff --name-only origin/${{ github.base_ref }}...HEAD \
                     | grep '^projects/.*/advocate-phenotype\.yaml$' || true)
           echo "Changed schemas in this PR:"
-          echo "${CHANGED:-  (none)"
+          echo "${CHANGED:-  (none)}"
           echo "changed_schemas<<EOF" >> "$GITHUB_OUTPUT"
           echo "$CHANGED"            >> "$GITHUB_OUTPUT"
           echo "EOF"                 >> "$GITHUB_OUTPUT"
