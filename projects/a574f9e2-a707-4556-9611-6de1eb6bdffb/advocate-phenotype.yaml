@@ -1,0 +1,58 @@
+project:
+  id: a574f9e2-a707-4556-9611-6de1eb6bdffb
+  created: '2026-05-23T00:56:30.145314+00:00'
+  updated: '2026-05-23T00:57:23.258761+00:00'
+investigator:
+  pi_name: Dr. Maya Chen
+  pi_email: maya.chen@advocatehealth.com
+  pi_role: quality_analyst
+  pi_orcid: 0000-0002-9183-4471
+  staff_id: null
+  contributors: []
+institution:
+  department: Cardiovascular Quality Analytics
+  irb_number: null
+  irb_status: null
+  funding_source: null
+compute:
+  sce_tier: 2
+  data_tier: B
+  environment: local
+  requested_at: '2026-05-23T00:56:30.145314+00:00'
+  approved_at: null
+  expires_at: null
+phenotype:
+  name: NSTEMI Quality Measure
+  version: 1.0.0
+  domain: condition
+  omop_aligned: true
+  clarity_required: false
+  target_concept_ids:
+  - 314666
+  icd_codes:
+  - I21.4
+  description: Identifies Non-ST-elevation myocardial infarction (NSTEMI) admissions
+    across the Advocate Health and Atrium Health network for quality measure reporting
+    aligned to ACC/AHA chest-pain guidelines (2021) and CMS-based quality reporting.
+  inclusion_criteria: "1. Condition occurrence: OMOP concept 314666 (NSTEMI), ICD-10\
+    \ I21.4; includeDescendants = true, includeMapped = true.\n2. Encounter setting:\
+    \ inpatient or emergency department visit (condition_type_concept_id IN 32817,\
+    \ 32020).\n3. High-sensitivity cardiac troponin I (LOINC 10839-9, OMOP 3016502)\
+    \ > 2\xD7 ULN (threshold 68 ng/L, ULN = 34 ng/L) within 24h of index date."
+  exclusion_criteria: "1. Concurrent STEMI (ICD-10 I21.0\u2013I21.3, OMOP 312327)\
+    \ within \xB11 day of index event.\n2. Type 2 MI (demand ischemia, ICD-10 I21.A1)\
+    \ by provider documentation."
+  validation_status: internal_validated
+  validation_method: chart_review
+  ppv: 0.963
+  phekb_id: null
+  ohdsi_pl_id: null
+outputs:
+  reusable_assets: []
+  publications: []
+  downstream_projects: []
+contribution:
+  deposit_eligible: false
+  deposit_submitted: false
+  deposit_date: null
+  credit_granted: false
