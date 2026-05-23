@@ -1,5 +1,15 @@
-generated: '2026-05-23T00:57:23.267929+00:00'
+generated: '2026-05-23T01:12:05.782245+00:00'
 projects:
+- id: cd975129-8570-465f-bfb6-75fe35dc31bf
+  pi_orcid: 0000-0002-9183-4471
+  pi_name: Dr. Maya Chen
+  phenotype_name: NSTEMI Quality Measure
+  domain: condition
+  validation_status: internal_validated
+  deposit_eligible: false
+  credit_granted: false
+  sce_tier: 2
+  updated: '2026-05-23T01:12:05.774388+00:00'
 - id: a574f9e2-a707-4556-9611-6de1eb6bdffb
   pi_orcid: 0000-0002-9183-4471
   pi_name: Dr. Maya Chen
