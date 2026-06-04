@@ -1,5 +1,15 @@
-generated: '2026-05-23T01:29:51.505322+00:00'
+generated: '2026-06-04T17:44:37.516737+00:00'
 projects:
+- id: b23db064-c161-4ee1-9c17-f02da88d0d09
+  pi_orcid: 0000-0002-9183-4471
+  pi_name: Dr. Maya Chen
+  phenotype_name: NSTEMI Quality Measure
+  domain: condition
+  validation_status: internal_validated
+  deposit_eligible: false
+  credit_granted: false
+  sce_tier: 2
+  updated: '2026-06-04T17:44:37.506880+00:00'
 - id: 741c4621-b599-4743-93f9-146aff9dc6bc
   pi_orcid: 0000-0002-9183-4471
   pi_name: Dr. Maya Chen
@@ -60,3 +70,13 @@ projects:
   credit_granted: false
   sce_tier: 2
   updated: '2026-05-16T19:41:28.769451+00:00'
+- id: f3d7c2a1-5b8e-4f9d-a2c1-7e6f0b4d3a8c
+  pi_orcid: 0000-0001-8472-3891
+  pi_name: Dr. Priya Chandrasekaran
+  phenotype_name: Incident NSTEMI (RWE)
+  domain: condition
+  validation_status: peer_reviewed
+  deposit_eligible: true
+  credit_granted: false
+  sce_tier: 4
+  updated: '2026-02-10T00:00:00+00:00'
